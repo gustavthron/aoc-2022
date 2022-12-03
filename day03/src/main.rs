@@ -1,51 +1,6 @@
-fn solve_part1() -> u32 {
-    let input = std::fs::read_to_string("input.txt").unwrap();
-    let rucksacks: Vec<(&str, &str)> = input
-        .lines()
-        .map(|line| line.split_at(line.len() / 2))
-        .collect();
-    let mut res: u32 = 0;
-    for (compartment1, compartment2) in rucksacks {
-        for item in compartment1.as_bytes() {
-            if compartment2.as_bytes().contains(item) {
-                res += if *item >= b'a' {
-                    u32::from(*item - b'a' + 1)
-                } else {
-                    u32::from(*item - b'A' + 27)
-                };
-                break;
-            }
-        }
-    }
-    return res;
-}
-
-fn solve_part2() -> u32 {
-    let input = std::fs::read_to_string("input.txt").unwrap();
-    let rucksacks = input
-        .lines()
-        .map(|line| line.as_bytes())
-        .collect::<Vec<&[u8]>>();
-    let groups: Vec<&[&[u8]]> = rucksacks.chunks(3).collect();
-    let mut res: u32 = 0;
-    for group in groups {
-        for item in group[0] {
-            if group[1].contains(item) && group[2].contains(item) {
-                res += if *item >= b'a' {
-                    u32::from(*item - b'a' + 1)
-                } else {
-                    u32::from(*item - b'A' + 27)
-                };
-                break;
-            }
-        }
-    }
-    return res;
-}
-
 fn main() {
     match std::env::var("part").unwrap().as_str() {
-        "part1" => println!("{}", solve_part1()),
-        _ => println!("{}", solve_part2()),
+        "part1" => println!("{}", std::fs::read_to_string("input.txt").unwrap().lines().map(|line| line.as_bytes().split_at(line.len() / 2)).map(|(comp1, comp2)| u32::from((comp1.to_vec().into_iter().collect::<std::collections::HashSet<u8>>().intersection(&comp2.to_vec().into_iter().collect::<std::collections::HashSet<u8>>()).collect::<Vec<&u8>>()[0] - b'A' + 27)%(b'a' - b'A' + 26))).sum::<u32>()),
+        _ => println!("{}", std::fs::read_to_string("input.txt").unwrap().lines().map(|line| line.as_bytes()).collect::<Vec<&[u8]>>().chunks(3).map(|group| u32::from((group[0].to_vec().into_iter().collect::<std::collections::HashSet<u8>>().intersection(&(group[1].to_vec().into_iter().collect::<std::collections::HashSet<u8>>().intersection(&group[2].to_vec().into_iter().collect::<std::collections::HashSet<u8>>()).copied().collect::<std::collections::HashSet<u8>>())).collect::<Vec<&u8>>()[0] - b'A' + 27)%(b'a' - b'A' + 26))).sum::<u32>()),
     }
 }
