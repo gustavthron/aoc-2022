@@ -1,16 +1,1 @@
-﻿int SolvePuzzle(int distinctCount)
-{
-    var input = File.ReadAllText("input.txt").ToCharArray();
-    var received = new List<char>();
-    for (int i = 0; i < input.Length; i++)
-    {
-        received.Add(input[i]);
-        if (received.TakeLast(distinctCount).Distinct().Count() == distinctCount)
-        {
-            return i + 1;
-        }
-    }
-    return 0;
-}
-
-Console.WriteLine(SolvePuzzle(Environment.GetEnvironmentVariable("part") == "part1" ? 4 : 14));
+﻿Console.WriteLine(File.ReadAllText("input.txt").ToList().Select((c, i) => (c, i)).Aggregate(new List<List<char>>(), (acc, e) => acc.Concat(new List<List<char>> { (acc.ElementAtOrDefault(e.i - 1) ?? new List<char>()).TakeLast(Environment.GetEnvironmentVariable("part") == "part1" ? 3 : 13).Concat(new List<char> { e.c }).ToList() }).ToList()).FindIndex((l) => l.Distinct().Count() == (Environment.GetEnvironmentVariable("part") == "part1" ? 4 : 14)) + 1);
